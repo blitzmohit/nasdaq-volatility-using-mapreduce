@@ -65,14 +65,15 @@ public class FirstMapperReducer {
 					// We got year as [0] and month as [1] and day as [2]
 					//Now we need filename that we are dealing with
 					String fileName = ((FileSplit) context.getInputSplit()).getPath().getName();
-//					String[] checkDash=fileName.split("-");
-//					if(checkDash.length>0){
-//						fileName=checkDash[0];
-//					}
-//					else if(fileName.lastIndexOf(".")!=-1){						
-//						fileName = fileName.substring(0, fileName.lastIndexOf("."));
-//					}
 					fileName=fileName.substring(0,fileName.length() - 4);
+
+					String[] checkDash=fileName.split("-");
+					if(checkDash.length>0){
+						fileName=checkDash[0];
+					}
+					else if(fileName.lastIndexOf(".")!=-1){						
+						fileName = fileName.substring(0, fileName.lastIndexOf("."));
+					}
 					price=companyInfo[6];
 
 
@@ -148,45 +149,6 @@ public class FirstMapperReducer {
 		}			
 	}
 
-
-	/*public static class Combiner extends Reducer<Text, Text, Text, Text>{
-		int thisdate=0;
-		int prevdate=0;
-		String bev="";
-		String eav="";
-		public void reduce(Text key1, Iterable<Text> values1, Context context){
-			// Here we will get the month wise bav and eav and send to reducer
-			int maxDay = 0;
-			int minDay = 32;
-			double maxDay_price=0;
-			double minDay_price=0;
-			for(Text val:values1) {
-				String parts [] = val.toString().split("-");
-				int day = Integer.parseInt(parts[0]);
-				double price = Double.parseDouble(parts[3]);
-				//System.out.println("price is "+price);
-				if(maxDay < day) {
-					maxDay = day;
-					maxDay_price=price;
-				}
-
-				if(minDay > day) {
-					minDay = day;
-					minDay_price=price;
-				}
-			}
-
-			try {
-				context.write(key1, new Text(minDay+"-"+minDay_price));
-				context.write(key1, new Text(maxDay+"-"+maxDay_price));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				log.error("Failed in combiner context write"+e.toString());
-			}
-		}
-	}
-*/
 
 	public static class Reduce extends Reducer<Text, Text, Text, Text>{
 		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException{
@@ -267,7 +229,6 @@ public class FirstMapperReducer {
 			job.getConfiguration().setQuietMode(true);
 			job.setJarByClass(FirstMapperReducer.class);
 			job.setMapperClass(Map.class);
-			//			job.setCombinerClass(Combiner.class);
 			job.setReducerClass(Reduce.class);
 			job.setMapOutputValueClass(Text.class);
 			job.setMapOutputKeyClass(Text.class);
